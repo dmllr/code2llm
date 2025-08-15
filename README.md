@@ -154,18 +154,13 @@ utils/
 `-- helpers.py
 
 main.py:
-```
 # Contents of main.py would be here...
 print("Hello from main.py")
-```
 
 utils/helpers.py:
-```
 # Contents of helpers.py would be here...
 def helper_function():
     return "This is a helper."
-```
-
 ```
 > *Note: The `dist/` directory and any `.log` files would be automatically excluded.*
 
