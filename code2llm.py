@@ -190,8 +190,10 @@ Requirements:
 - Ensure code is performant and follows security best practices
 
 Comments policy:
-- Since I use git for change tracking, never add placeholder comments like "keep this", "modify this", or "New: [feature]"
-- Only add comments that explain complex business logic, algorithms, or non-obvious technical decisions
+- Good code comments itself
+- Comment code, not your actions
+- Since I use git for change tracking, never add placeholder comments marking changes that has been made
+- Only add comments that explain complex logic, algorithms, or non-obvious decisions
 - Avoid obvious comments that simply restate what the code does
 - Remember: good code should be self-documenting through clear naming and structure
 
@@ -254,4 +256,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
