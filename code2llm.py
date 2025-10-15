@@ -197,6 +197,11 @@ Comments policy:
 - Avoid obvious comments that simply restate what the code does
 - Remember: good code should be self-documenting through clear naming and structure
 
+Changes policy:
+- Apply only and only requested changes and nothing else
+- Avoid removing existing comments or reformatting non-changed parts of the code
+- Follow the same coding and documentation style as it is in the modified file
+
 If the requirements are unclear, ask for clarification rather than making assumptions."""
     
     output = system_prompt + "\n\n"
@@ -258,3 +263,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
