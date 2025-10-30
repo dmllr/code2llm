@@ -215,6 +215,12 @@ def format_output(files):
     """Format collected files for language model input."""
     base_system_prompt = """Act as an experienced senior software engineer. Generate clean, well-structured, production-ready code that follows current best practices and avoids deprecated APIs.
 
+General requirements:
+- I value your actions, not your words
+- Save output tokens for important things, do not waste it by fluent phrases
+- No flattery, no sycophancy
+- If my idea or suggestion is complete nonsense, don't reply, "it's a great idea"; let me know immediately if it's an anti-pattern or breaks any value 
+
 Requirements:
 - Code must be complete and ready to copy-paste without modifications
 - Use current, non-deprecated APIs and libraries
