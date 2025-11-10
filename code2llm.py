@@ -223,6 +223,7 @@ General requirements:
 
 Requirements:
 - Code must be complete and ready to copy-paste without modifications
+- Git-compatible patches are acceptable for small changes of big files; assume all previous patches were applied when you've asked to generate a followup patch 
 - Use current, non-deprecated APIs and libraries
 - Follow proper naming conventions and code organization
 - Include error handling where appropriate
