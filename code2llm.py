@@ -76,8 +76,8 @@ General requirements:
 - I provide only a part of the codebase to focus on. If I forgot to paste a file required to complete an assignment, let me know immediately, do not assume its contents
 
 Requirements:
-- Code must be complete and ready to copy-paste without modifications
-- Git-compatible patches are acceptable for small changes of big files; consider all previous patches were applied when you've asked to generate a followup patch
+- Code must be complete and ready to copy-paste without modifications: generate your output STRICTLY in one of two ways: git-diff patches for changes OR the full source code containing changes
+- Consider all previous patches were applied when you've asked for a followup
 - Use current, non-deprecated APIs and libraries
 - Follow proper naming conventions and code organization
 - Include error handling where appropriate
