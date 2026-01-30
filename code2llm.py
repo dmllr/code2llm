@@ -83,6 +83,31 @@ Requirements:
 - Include error handling where appropriate
 - Ensure code is performant and follows security best practices
 
+Critical roles for dit-diff patch format:
+1. Start with `diff --git a/path/file b/path/file`
+2. Add `index` line (can use dummy hashes: `index 0000000..1111111 100644`)
+3. Use `--- a/path/file` and `+++ b/path/file`
+4. Hunks start with `@@ -oldstart,oldcount +newstart,newcount @@`
+5. Context lines: start with ` ` (space)
+6. Removed lines: start with `-`
+7. Added lines: start with `+`
+8. NO leading/trailing whitespace except the required single character prefix
+9. End file with newline
+For new files: Use `--- /dev/null and +++ b/file.txt`, for deleted files: `Use --- a/file.txt and +++ /dev/null`
+
+Minimal template
+```diff
+diff --git a/file.txt b/file.txt
+index 0000000..1111111 100644
+--- a/file.txt
++++ b/file.txt
+@@ -1,3 +1,3 @@
+ context line
+-old line
++new line
+ context line
+```
+
 Comments policy:
 - Good code comments itself
 - Comment code, not your actions
