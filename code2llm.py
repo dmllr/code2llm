@@ -76,37 +76,13 @@ General requirements:
 - I provide only a part of the codebase to focus on. If I forgot to paste a file required to complete an assignment, let me know immediately, do not assume its contents
 
 Requirements:
-- Code must be complete and ready to copy-paste without modifications: generate your output STRICTLY in one of two ways: git-diff patches for changes OR the full source code containing changes
+- Code must be complete and ready to copy-paste without modifications: generate your output STRICTLY in one of two ways: 100% compatible git-diff patches (except the hash, it could be fake) OR the full source code containing changes
+- For brevity it is acceptable to generate add-only part for tests and localization files, specify the line to where the add-on code shall be inserted 
 - Consider all previous patches were applied when you've asked for a followup
 - Use current, non-deprecated APIs and libraries
 - Follow proper naming conventions and code organization
 - Include error handling where appropriate
 - Ensure code is performant and follows security best practices
-
-Critical roles for dit-diff patch format:
-1. Start with `diff --git a/path/file b/path/file`
-2. Add `index` line (can use dummy hashes: `index 0000000..1111111 100644`)
-3. Use `--- a/path/file` and `+++ b/path/file`
-4. Hunks start with `@@ -oldstart,oldcount +newstart,newcount @@`
-5. Context lines: start with ` ` (space)
-6. Removed lines: start with `-`
-7. Added lines: start with `+`
-8. NO leading/trailing whitespace except the required single character prefix
-9. End file with newline
-For new files: Use `--- /dev/null and +++ b/file.txt`, for deleted files: `Use --- a/file.txt and +++ /dev/null`
-
-Minimal template
-```diff
-diff --git a/file.txt b/file.txt
-index 0000000..1111111 100644
---- a/file.txt
-+++ b/file.txt
-@@ -1,3 +1,3 @@
- context line
--old line
-+new line
- context line
-```
 
 Comments policy:
 - Good code comments itself
@@ -188,10 +164,13 @@ def gather_language_prompts(files: List[Tuple[str, Path]]) -> str:
 
 class Excluder:
     """Handles logic for excluding files based on various patterns."""
-    def __init__(self, base_paths: List[Path], exact_paths: List[str], regexes: List[str], substrings: List[str], forced_exclude: List[str]):
+    def __init__(self, base_paths: List[Path], exact_paths: List[str], regexes: List[str], substrings: List[str],
+                 forced_exclude: List[str], forced_regexes: List[str], forced_substrings: List[str]):
         self.base_paths = base_paths or []
         self.regexes = [re.compile(r) for r in (regexes or [])]
         self.substrings = substrings or []
+        self.forced_regexes = [re.compile(r) for r in (forced_regexes or [])]
+        self.forced_substrings = forced_substrings or []
         self.forced_exclude = set()
         for p in (forced_exclude or []):
             if os.path.isabs(p):
@@ -232,6 +211,15 @@ class Excluder:
         norm = os.path.normpath(path)
         for fe in self.forced_exclude:
             if norm == fe or norm.startswith(fe + os.sep):
+                return True
+        for rx in self.forced_regexes:
+            try:
+                if rx.search(norm):
+                    return True
+            except re.error:
+                return False
+        for sub in self.forced_substrings:
+            if sub in norm:
                 return True
         return False
 
@@ -359,6 +347,10 @@ def parse_args():
                         help='Exclude files containing a substring in their path. Marked with [x].\nCan be specified multiple times.')
     parser.add_argument('-ef', '--exclude-force', action='append', default=[],
                         help='Force exclude a path. It will NOT appear in the project structure at all.\nCan be specified multiple times.')
+    parser.add_argument('-erf', '--exclude-regex-force', action='append', default=[],
+                        help='Force exclude files matching a regex. Will NOT appear in the project structure at all.\nCan be specified multiple times.')
+    parser.add_argument('-exf', '--exclude-substr-force', action='append', default=[],
+                        help='Force exclude files containing a substring in their path. Will NOT appear in the project structure at all.\nCan be specified multiple times.')
     parser.add_argument('--no-system-prompt', action='store_true',
                         help='Do not include the system prompt in the output.')
     parser.add_argument('--no-structure', action='store_true',
@@ -380,7 +372,8 @@ def main():
     if not base_paths:
         base_paths = [Path.cwd()]
 
-    excluder = Excluder(base_paths, args.exclude, args.exclude_regex, args.exclude_substr, args.exclude_force)
+    excluder = Excluder(base_paths, args.exclude, args.exclude_regex, args.exclude_substr,
+                        args.exclude_force, args.exclude_regex_force, args.exclude_substr_force)
 
     all_files = collect_files(inputs)
 
