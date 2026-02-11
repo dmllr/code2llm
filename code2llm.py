@@ -76,7 +76,7 @@ General requirements:
 - I provide only a part of the codebase to focus on. If I forgot to paste a file required to complete an assignment, let me know immediately, do not assume its contents
 
 Requirements:
-- Code must be complete and ready to copy-paste without modifications: generate your output STRICTLY in one of two ways: 100% compatible git-diff patches (except the hash, it could be fake) OR the full source code containing changes
+- Code must be complete and ready to copy-paste without modifications: generate your output STRICTLY in one of two ways: 100% compatible git-diff patches OR the full source code containing changes; always include file name and hash (it could be fake) in diff
 - For brevity it is acceptable to generate add-only part for tests and localization files, specify the line to where the add-on code shall be inserted 
 - Consider all previous patches were applied when you've asked for a followup
 - Use current, non-deprecated APIs and libraries
