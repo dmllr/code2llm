@@ -227,8 +227,8 @@ class Excluder:
 # File collection
 # ---------------------------------------------------------------------------
 
-def collect_files(input_paths: List[str]) -> List[Tuple[str, Path]]:
-    """Collects all files from input paths, respecting .gitignore but not other exclusion rules."""
+def collect_files(input_paths: List[str], excluder: Excluder) -> List[Tuple[str, Path]]:
+    """Collects all files from input paths, respecting .gitignore and excluder rules."""
     all_files: List[Tuple[str, Path]] = []
     for input_path_str in input_paths:
         input_path = Path(input_path_str).resolve()
@@ -247,8 +247,27 @@ def collect_files(input_paths: List[str]) -> List[Tuple[str, Path]]:
             root_path = Path(root)
             rel_root = root_path.relative_to(base_path).as_posix()
 
-            # Filter directories based on gitignore
-            dirs[:] = [d for d in dirs if not gitignore_matches(f"{rel_root}/{d}", gitignore_patterns)]
+            # Filter directories based on gitignore and exclusion rules
+            filtered_dirs = []
+            for d in dirs:
+                dir_path = root_path / d
+                dir_rel_path = f"{rel_root}/{d}" if rel_root else d
+
+                # Skip if gitignore matches
+                if gitignore_matches(dir_rel_path, gitignore_patterns):
+                    continue
+
+                # Skip if force excluded
+                if excluder.is_forced_excluded(str(dir_path)):
+                    continue
+
+                # Skip if excluded (don't traverse, but would show in structure)
+                if excluder.is_excluded(str(dir_path), base_path):
+                    continue
+
+                filtered_dirs.append(d)
+
+            dirs[:] = filtered_dirs
 
             for file in files:
                 file_path = root_path / file
@@ -375,7 +394,7 @@ def main():
     excluder = Excluder(base_paths, args.exclude, args.exclude_regex, args.exclude_substr,
                         args.exclude_force, args.exclude_regex_force, args.exclude_substr_force)
 
-    all_files = collect_files(inputs)
+    all_files = collect_files(inputs, excluder)
 
     # Filter out binary files before formatting
     filtered_files: List[Tuple[str, Path]] = []
