@@ -228,7 +228,8 @@ class Excluder:
 # ---------------------------------------------------------------------------
 
 def collect_files(input_paths: List[str], excluder: Excluder) -> List[Tuple[str, Path]]:
-    """Collects all files from input paths, respecting .gitignore and excluder rules."""
+    """Collects all files from input paths, respecting .gitignore and force-exclusion rules.
+    Regular excluded files are still collected for structure display."""
     all_files: List[Tuple[str, Path]] = []
     for input_path_str in input_paths:
         input_path = Path(input_path_str).resolve()
@@ -247,7 +248,7 @@ def collect_files(input_paths: List[str], excluder: Excluder) -> List[Tuple[str,
             root_path = Path(root)
             rel_root = root_path.relative_to(base_path).as_posix()
 
-            # Filter directories based on gitignore and exclusion rules
+            # Filter directories - skip only gitignored and force-excluded directories
             filtered_dirs = []
             for d in dirs:
                 dir_path = root_path / d
@@ -257,12 +258,8 @@ def collect_files(input_paths: List[str], excluder: Excluder) -> List[Tuple[str,
                 if gitignore_matches(dir_rel_path, gitignore_patterns):
                     continue
 
-                # Skip if force excluded
+                # Skip ONLY if force excluded (regular exclusions still traverse for structure)
                 if excluder.is_forced_excluded(str(dir_path)):
-                    continue
-
-                # Skip if excluded (don't traverse, but would show in structure)
-                if excluder.is_excluded(str(dir_path), base_path):
                     continue
 
                 filtered_dirs.append(d)
